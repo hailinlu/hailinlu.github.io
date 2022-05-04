@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>fabric.js - 图片加载</title>
+    <script src="https://cdn.jsdelivr.net/npm/fabric@5.2.1/dist/fabric.min.js"></script>
+</head>
+<body>
+<canvas id="c" width="600" height="600"></canvas>
+<script defer>
+    const canvas = new fabric.Canvas("c", {
+        backgroundColor: "black",
+        width: 600,
+        height: 600,
+        selection: false,
+        renderOnAddRemove: true,
+    });
+
+    let bg_img = 'https://cdn.jsdelivr.net/gh/hailinlu/own-blog-image/lzwk.jpg';
+    let image = 'http://fabricjs.com/assets/honey_im_subtle.png'
+    // 设置背景图片
+    canvas.setBackgroundImage(bg_img, () => {
+        // 加载图片
+        fabric.Image.fromURL(image, (oImg) => {
+            oImg.set('flipX', true);
+            canvas.add(oImg);
+            // 加载svg
+            fabric.loadSVGFromURL("./icon.svg", (objects, options) => {
+                let group = fabric.util.groupSVGElements(objects, {
+                    left: 0,
+                    top: 0,
+                    scaleX: 0.08,
+                    scaleY: 0.08
+                });
+                canvas.add(group);
+            })
+        })
+    }, {
+        originX: 'left',
+        originY: 'top'
+    });
+</script>
+</body>
+</html>

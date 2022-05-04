@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fabric.js - 扇形</title>
+  <script src="https://cdn.jsdelivr.net/npm/fabric@5.2.1/dist/fabric.min.js"></script>
+</head>
+
+<body>
+  <canvas id="c" width="300" height="300"></canvas>
+  <script defer>
+    const canvas = new fabric.Canvas("c", {
+      backgroundColor: "black",
+      selection: false,
+    });
+
+    // 获取椭圆上点的坐标 公式参考（https://blog.csdn.net/he_zhidan/article/details/81347426）
+    function getSectorPathByEllipse(cp, rx, ry, angle, czAngle) {
+      let convertAngle = (Math.PI * angle) / 180;
+      let convertCzAngle = (Math.PI * czAngle) / 180;
+      const dLixin = Math.atan2(
+        rx * Math.sin(convertAngle),
+        ry * Math.cos(convertAngle)
+      );
+      let x =
+        rx * Math.cos(dLixin) * Math.cos(convertCzAngle) -
+        ry * Math.sin(dLixin) * Math.sin(convertCzAngle) +
+        cp.x;
+      let y =
+        rx * Math.cos(dLixin) * Math.sin(convertCzAngle) -
+        ry * Math.sin(dLixin) * Math.cos(convertCzAngle) +
+        cp.y;
+      return { x, y };
+    }
+
+    // 获取扇形路径 (startAngle <= endAngle,range(0,360))
+    // cp 圆心 rx,ry 半径 rx >= ry startAngle 起始角度 endAngle 终止角度
+    // sweepFlag 1 表示顺时针画弧线 0 为顺时针 largeArcFlag 启用大角度 czAngle 长轴角度
+    function getSectorPath(
+      cp,
+      rx,
+      ry,
+      startAngle,
+      endAngle,
+      largeArcFlag = 0,
+      sweepFlag = 0,
+      czAngle = 0
+    ) {
+      const start = (Math.PI * startAngle) / 180,
+        end = (Math.PI * endAngle) / 180;
+
+      const startP = getSectorPathByEllipse(cp, rx, ry, startAngle, czAngle);
+
+      const endP = getSectorPathByEllipse(cp, rx, ry, endAngle, czAngle);
+
+      // 角度相差180，使用大角度
+      if (endAngle - startAngle > 180) {
+        largeArcFlag = 1;
+      }
+
+      return `M${cp.x} ${cp.y} L${startP.x} ${startP.y} A ${rx} ${ry}, 0 ,${largeArcFlag}, ${sweepFlag}, ${endP.x} ${endP.y} Z`;
+    }
+
+    const paths = [];
+    for (let i = 0; i <= 315; i += 45) {
+      let path1 = new fabric.Path(
+        getSectorPath({ x: 80, y: 80 }, 45, 45, i, i + 45),
+        {
+          stroke: "white",
+          strokeWidth: 1,
+          fill: "blue",
+          selectable: false,
+        }
+      );
+
+      let path2 = new fabric.Path(
+        getSectorPath({ x: 100, y: 200 }, 80, 45, i, i + 45),
+        {
+          stroke: "white",
+          strokeWidth: 1,
+          fill: "blue",
+          selectable: false,
+        }
+      );
+
+      paths.push(path1, path2);
+    }
+
+    canvas.add(...paths);
+  </script>
+</body>
+
+</html>

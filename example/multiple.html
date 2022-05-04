@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fabric.js - 大量图元渲染</title>
+  <script src="https://cdn.jsdelivr.net/npm/fabric@5.2.1/dist/fabric.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
+  <style>
+    .canvas-container {
+      margin: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <label for="pet-select">选择类型:</label>
+  <select name="pets" id="pet-select">
+    <option value="1" selected>无组渲染</option>
+    <option value="2">成组非拷贝渲染</option>
+    <option value="3">成组拷贝渲染</option>
+  </select>
+  <label for="count-number">元素数量:</label>
+  <input type="number" name="number-count" id="count-number" value="1" min="1" max="20" />
+  <script defer>
+    function initCanvas(flag = 1, itemCount = 1) {
+      $(".canvas-container").remove();
+      const getRandomInt = fabric.util.getRandomInt;
+      const rainbow = ["#ffcc66", "#ccff66", "#66ccff", "#ff6fcf", "#ff6666"];
+      const rainbowEnd = rainbow.length - 1;
+
+      // 无组渲染
+      if (flag === 1) {
+        const canvasElement = document.createElement("canvas");
+        const canvas = new fabric.Canvas(canvasElement, {
+          backgroundColor: "black",
+          width: 600,
+          height: 600,
+          selection: false,
+          renderOnAddRemove: false,
+        });
+        let begin = +new Date();
+
+        let groups = [];
+        for (let index = 0; index < 5000; index++) {
+          let items = [];
+          let left = getRandomInt(0, 600);
+          let top = getRandomInt(0, 600);
+          for (let i = 0; i < itemCount; i++) {
+            let rect = new fabric.Rect({
+              left,
+              top,
+              width: 5,
+              height: 5,
+              fill: rainbow[getRandomInt(0, rainbowEnd)],
+              objectCaching: false,
+              selectable: false,
+            });
+
+            items.push(rect);
+          }
+          groups.push(...items);
+        }
+        canvas.add(...groups);
+        canvas.renderAll();
+        document.body.appendChild(canvas.wrapperEl);
+        let end = +new Date();
+        console.log(`无组渲染耗时：${end - begin}ms,元素数量:${itemCount * 5000}`);
+      }
+
+      // 成组非拷贝渲染
+      if (flag === 2) {
+        const canvasElement1 = document.createElement("canvas");
+        const canvas1 = new fabric.Canvas(canvasElement1, {
+          backgroundColor: "black",
+          width: 600,
+          height: 600,
+          selection: false,
+          renderOnAddRemove: false,
+        });
+        let begin = +new Date();
+
+        let groups = [];
+        for (let index = 0; index < 5000; index++) {
+          let items = [];
+          for (let i = 0; i < itemCount; i++) {
+            let rect = new fabric.Rect({
+              width: 5,
+              height: 5,
+              fill: rainbow[getRandomInt(0, rainbowEnd)],
+              objectCaching: false,
+              selectable: false,
+            });
+
+            items.push(rect);
+          }
+
+          let group = new fabric.Group(items, {
+            left: getRandomInt(0, 600),
+            top: getRandomInt(0, 600),
+            objectCaching: false,
+            selectable: false,
+          });
+
+          groups.push(group);
+        }
+        canvas1.add(...groups);
+        canvas1.renderAll();
+        document.body.appendChild(canvas1.wrapperEl);
+        let end = +new Date();
+        console.log(
+          `成组非拷贝渲染耗时：${end - begin}ms,组数:5000,组内元素数量:${itemCount}`
+        );
+      }
+
+      // 拷贝渲染
+      if (flag === 3) {
+        const canvasElement2 = document.createElement("canvas");
+        const canvas2 = new fabric.Canvas(canvasElement2, {
+          backgroundColor: "black",
+          width: 600,
+          height: 600,
+          selection: false,
+          renderOnAddRemove: false,
+        });
+        let begin = +new Date();
+
+        let items = [];
+        for (let i = 0; i < itemCount; i++) {
+          let rect = new fabric.Rect({
+            width: 5,
+            height: 5,
+            fill: rainbow[getRandomInt(0, rainbowEnd)],
+            objectCaching: false,
+            selectable: false,
+          });
+
+          items.push(rect);
+        }
+
+        let group = new fabric.Group(items, {
+          left: 0,
+          top: 0,
+          selectable: false,
+          objectCaching: false,
+        });
+
+        let groups = [];
+        for (let index = 0; index < 5000; index++) {
+            let item = fabric.util.object.clone(group);
+            item.left = getRandomInt(0, 600);
+            item.top = getRandomInt(0, 600);
+            item.objectCaching = false;
+            item.selectable = false;
+            groups.push(item);
+        }
+
+        canvas2.add(...groups);
+        canvas2.renderAll();
+        document.body.appendChild(canvas2.wrapperEl);
+        let end = +new Date();
+        console.log(
+          `成组拷贝渲染耗时：${end - begin}ms,组数:5000,组内元素数量:${itemCount}`
+        );
+      }
+    }
+    initCanvas(1, 1);
+    // 类型变化
+    $("#pet-select").change((event) => {
+      let val = $("#pet-select").val();
+      let count = $("#count-number").val();
+      initCanvas(parseInt(val), parseInt(count));
+    });
+
+    // 数量变化
+    $("#count-number").change((event) => {
+      let val = $("#pet-select").val();
+      let count = $("#count-number").val();
+      initCanvas(parseInt(val), parseInt(count));
+    });
+  </script>
+</body>
+
+</html>

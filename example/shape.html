@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fabric 基础图元</title>
+    <script src="https://cdn.jsdelivr.net/npm/fabric@5.2.1/dist/fabric.min.js"></script>
+</head>
+
+<body>
+    <canvas id="c" width="400" height="400"></canvas>
+    <script defer>
+        const canvas = new fabric.Canvas("c", {
+            backgroundColor: "black", // 设置画布背景色为黑色
+            selection: false, // 去除框选
+        })
+
+        // 矩形
+        const rect = new fabric.Rect({
+            left: 250,
+            top: 150,
+            width: 50,
+            height: 50,
+            fill: "red",
+            stroke: "yellow",
+            originX: 'center',
+            originY: "center"
+        })
+
+        // 圆形
+        const circle = new fabric.Circle({
+            radius: 25,
+            left: 25,
+            top: 25,
+            fill: "blue"
+        })
+
+        // 三角形
+        const triangle = new fabric.Triangle({
+            width: 20,
+            height: 30,
+            fill: 'red',
+            left: 150,
+            top: 50
+        });
+
+        // 线路
+        const line = new fabric.Line([100, 40, 200, 40], {
+            stroke: "purple",
+            strokeWidth: 2,
+            strokeDashArray: [3, 3]
+        })
+
+        // 椭圆
+        const ellipse = new fabric.Ellipse({
+            left: 220,
+            top: 50,
+            rx: 25,
+            ry: 15,
+            fill: "green",
+            stroke: "yellow",
+            angle: 0
+        })
+
+        // 文本
+        const text = new fabric.Text("欢迎来到我的博客！", {
+            fontFamily: 'Comic Sans',
+            fontSize: 20,
+            fontWeight: "bold",
+            shadow: 'rgba(0,0,0,0.3) 5px 5px 5px',
+            fill: "white",
+            stroke: "green",
+            left: 200,
+            top: 200
+        })
+
+        // 折线示例代码
+        const polyline = new fabric.Polyline(
+            [
+                { x: 10, y: 10 },
+                { x: 50, y: 30 },
+                { x: 40, y: 70 },
+                { x: 60, y: 50 },
+                { x: 100, y: 150 },
+                { x: 40, y: 100 },
+            ],
+            {
+                stroke: "red",
+                left: 100,
+                top: 100
+            }
+        );
+
+        // 多边形 示例代码 Polygon 是 Polyline的扩展
+        const points = [
+            {
+                x: 3,
+                y: 4,
+            },
+            {
+                x: 16,
+                y: 3,
+            },
+            {
+                x: 30,
+                y: 5,
+            },
+            {
+                x: 25,
+                y: 55,
+            },
+            {
+                x: 19,
+                y: 44,
+            },
+            {
+                x: 15,
+                y: 30,
+            },
+            {
+                x: 15,
+                y: 55,
+            },
+            {
+                x: 9,
+                y: 55,
+            },
+            {
+                x: 6,
+                y: 53,
+            },
+            {
+                x: -2,
+                y: 55,
+            },
+            {
+                x: -4,
+                y: 40,
+            },
+            {
+                x: 0,
+                y: 20,
+            },
+        ];
+
+        const polygon = new fabric.Polygon(points, {
+            left: 100,
+            top: 50,
+            fill: "#D81B60",
+            strokeWidth: 4,
+            stroke: "green",
+            objectCaching: false,
+            transparentCorners: false,
+            cornerColor: "blue",
+        });
+
+
+        const shapes = [rect, circle, triangle, line, ellipse, text, polyline, polygon];
+
+        canvas.add(...shapes);
+    </script>
+</body>
+
+</html>

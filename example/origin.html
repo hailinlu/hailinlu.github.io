@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>fabric - 坐标系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/fabric@5.2.1/dist/fabric.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
+</head>
+<body>
+<label for="text-originX-select">Text-originX:</label>
+<select name="originX-text" id="text-originX-select">
+    <option value="left" selected>left</option>
+    <option value="center">center</option>
+    <option value="right">right</option>
+</select>
+<label for="text-originY-select">Text-originX:</label>
+<select name="originY-text" id="text-originY-select">
+    <option value="top" selected>top</option>
+    <option value="center">center</option>
+    <option value="bottom">bottom</option>
+</select>
+<label for="circle-originX-select">Circle-originX:</label>
+<select name="originX-circle" id="circle-originX-select">
+    <option value="left" selected>left</option>
+    <option value="center">center</option>
+    <option value="right">right</option>
+</select>
+<label for="circle-originY-select">Circle-originX:</label>
+<select name="originY-circle" id="circle-originY-select">
+    <option value="top" selected>top</option>
+    <option value="center">center</option>
+    <option value="bottom">bottom</option>
+</select>
+<br/>
+<label for="text-left">text-left:</label>
+<input type="number" name="text-left" id="text-left" value="0" min="0" max="800" step="10"/>
+<label for="text-top">text-top:</label>
+<input type="number" name="text-top" id="text-top" value="0" min="0" max="800" step="10"/>
+<label for="circle-left">circle-left:</label>
+<input type="number" name="circle-left" id="circle-left" value="0" min="0" max="800" step="10"/>
+<label for="circle-top">circle-top:</label>
+<input type="number" name="text-top" id="circle-top" value="0" min="0" max="800" step="10"/>
+<br/>
+<label for="group-left">group-left:</label>
+<input type="number" name="circle-left" id="group-left" value="0" min="0" max="800" step="10"/>
+<label for="group-top">group-top:</label>
+<input type="number" name="text-top" id="group-top" value="0" min="0" max="800" step="10"/>
+<button type="button" onclick="originExample(getArguments())">刷新</button>
+<canvas id="c" width="800" height="800" style="margin-top: 20px"></canvas>
+<script defer>
+    const canvas = new fabric.Canvas("c", {
+        backgroundColor: "gray",
+        selection: false
+    });
+
+    // 获取传入参数
+    function getArguments() {
+        let textOriginX = $("#text-originX-select").val();
+        let textOriginY = $("#text-originY-select").val();
+        let circleOriginX = $("#circle-originX-select").val();
+        let circleOriginY = $("#circle-originY-select").val();
+        let textLeft = parseFloat($("#text-left").val());
+        let textTop = parseFloat($("#text-top").val());
+        let circleLeft = parseFloat($("#circle-left").val());
+        let circleTop = parseFloat($("#circle-top").val());
+        let groupLeft = parseFloat($("#group-left").val());
+        let groupTop = parseFloat($("#group-top").val());
+        return {
+            textOriginX, textOriginY, circleOriginX, circleOriginY,
+            textLeft, textTop, circleLeft, circleTop, groupLeft, groupTop
+        };
+    }
+
+    // 测试函数
+    function originExample(option) {
+        canvas.clear();
+        canvas.set("backgroundColor", "gray");
+        const {
+            textOriginX = "left", textOriginY = "top", circleOriginX = "left", circleOriginY = "top",
+            textLeft = 0, textTop = 0, circleLeft = 0, circleTop = 0, groupLeft = 0, groupTop = 0
+        } = option;
+        const text = new fabric.Text("text", {
+            left: textLeft,
+            top: textTop,
+            originX: textOriginX,
+            originY: textOriginY,
+            fill: "red",
+            stroke: "yellow"
+        })
+
+        const circle = new fabric.Circle({
+            radius: 50,
+            left: circleLeft,
+            top: circleTop,
+            originX: circleOriginX,
+            originY: circleOriginY,
+            fill: "blue"
+        })
+
+        const group = new fabric.Group([circle, text], {
+            left: groupLeft,
+            top: groupTop,
+            width: 100,
+            height: 100
+        });
+        canvas.add(group);
+        console.log(group.left, group.top, group.width, group.height);
+    }
+
+    originExample(getArguments());
+</script>
+</body>
+</html>
